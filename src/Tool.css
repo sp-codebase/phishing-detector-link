@@ -1,0 +1,58 @@
+.tool-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.input-section {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input-section input {
+  padding: 10px;
+  width: 60%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input-section button {
+  padding: 10px 20px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.input-section button:hover {
+  background-color: #3b82f6;
+}
+
+.result-box {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.customers-box {
+  margin: 20px 0;
+  font-size: 1rem;
+  background-color: #e0f2fe;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.history-panel {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.history-panel ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
