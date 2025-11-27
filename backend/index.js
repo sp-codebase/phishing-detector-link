@@ -35,7 +35,7 @@ const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } }); // 8M
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/phishing_detector";
 
-import mongoose from "mongoose"; // or const mongoose = require("mongoose");
+; // or const mongoose = require("mongoose");
 import dotenv from "dotenv";     // only if you're using dotenv locally
 dotenv.config();                 // (not required on Render, but useful locally)
 
