@@ -1,107 +1,149 @@
-// frontend/src/components/DetectForm.jsx
+// src/components/DetectForm.jsx
 import React, { useState } from "react";
-import api from "../api/axios"; // <- uses your api client (baseURL)
 
-export default function DetectForm( { onResult }) {
+/**
+ * Props:
+ * - onResult (fn) optional callback when a result is ready (receives history-like entry)
+ * - api (axios instance) optional; if not provided we will import default client
+ */
+import defaultApi from "../api/axios";
+
+export default function DetectForm({ onResult, api = defaultApi }) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
 
-  async function handleCheck(e) {
-    e.preventDefault();
+    function normalizeResponse(data = {}) {
+
+  // backend returns { success, saved, result }
+  const rawResult = data.result ?? data;        // MOST IMPORTANT CHANGE ❗
+  const rawLabel =
+    rawResult.prediction ??
+    rawResult.label ??
+    rawResult.pred ??
+    rawResult.result ??
+    rawResult.predicted_label;
+
+  // Interpret phishing / safe
+  let label = "unknown";
+  if (rawLabel !== undefined && rawLabel !== null) {
+    const s = String(rawLabel).trim().toLowerCase();
+    if (s === "1" || s.includes("phish")) label = "phishing";
+    else if (s === "0" || s.includes("legit") || s.includes("safe")) label = "safe";
+    else label = s || "unknown";
+  }
+
+    return {
+    label,
+    score,
+    // show saved Mongo doc (or any features the backend returns)
+    features: data.saved ?? rawResult.features ?? null,
+    raw: data, // full original backend response
+    checkedAt: new Date().toISOString(),
+  };
+}
+
+
+  const handleCheck = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     setError("");
     setResult(null);
 
     const clean = (url || "").trim();
     if (!clean) {
-      setError("Please enter a URL");
+      setError("Please enter a URL.");
       return;
+    }
+
+    // optional: basic validation (accepts http(s) and file paths)
+    try {
+      // eslint-disable-next-line no-new
+      new URL(clean);
+    } catch {
+      // allow file paths if your backend accepts them; otherwise show message
+      if (!clean.startsWith("/") && !clean.startsWith("file://")) {
+        setError("Please enter a valid URL (include http/https) or a valid file path.");
+        return;
+      }
     }
 
     setLoading(true);
     try {
-      // Use axios via your api client which should have baseURL http://localhost:5000
+      // call backend (api should be axios instance with correct baseURL)
       const resp = await api.post("/api/predict-ml", { url: clean });
+      // after: const resp = await api.post("/api/predict-ml", { url: clean });
+      console.log("AXIOS full resp:", resp);
+      const data = resp?.data ?? {};
+      console.log("AXIOS resp.data:", data);
 
-      // If backend returns non-200 but axios still resolves, handle here
-      const data = resp.data;
-      setResult(data);
+     
 
-      const historyItem = {
-  url: trimmed,
-  label: data.label,
-  confidence: data.confidence,
-  prediction: data.prediction,
-  features: data.features,
-  time: new Date().toISOString()
-};
+      // normalize and set result
+      const normalized = normalizeResponse(data);
+      setResult(normalized);
 
-if (onResult) onResult(historyItem);
+      // build history entry
+      const entry = {
+        url: clean,
+        label: normalized.label,
+        score: normalized.score,
+        features: normalized.features,
+        time: normalized.checkedAt,
+      };
 
+      // parent callback & localStorage handled by parent
+      if (onResult) onResult(entry);
 
-      // optional: save to localStorage history for app-level history reading
+      // also update localStorage directly so Tool page's initial read shows it immediately
       try {
-        const history = JSON.parse(localStorage.getItem("phish_history") || "[]");
-        const entry = {
-          url: clean,
-          label: data.label ?? (data.prediction === 1 ? "phishing" : "safe"),
-          score: Number(data.confidence ?? 0),
-          checkedAt: new Date().toISOString()
-        };
-        history.unshift(entry);
-        localStorage.setItem("phish_history", JSON.stringify(history.slice(0, 30)));
-      } catch (e) {
-        // ignore storage errors
-        console.warn("Could not update local history:", e);
+        const hist = JSON.parse(localStorage.getItem("phish_history") || "[]");
+        hist.unshift(entry);
+        localStorage.setItem("phish_history", JSON.stringify(hist.slice(0, 30)));
+      } catch (err) {
+        // ignore
       }
 
+      setUrl("");
     } catch (err) {
-      // axios error handling - prefer backend error message when present
-      const serverMsg = err?.response?.data?.error || err?.response?.data || null;
+      console.error("Prediction error:", err);
+      const serverMsg = err?.response?.data?.error || err?.response?.data || err?.message || "Network error";
       const status = err?.response?.status;
-      const msg = serverMsg || err.message || "Network error";
-      setError(`Request failed${status ? ` (status ${status})` : ""}: ${msg}`);
-      console.error("Prediction error:", { err, serverMsg, status });
+      setError(`Request failed${status ? ` (status ${status})` : ""}: ${serverMsg}`);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-   <div className="p-8 max-w-3xl mx-auto bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 mt-6">
+    <div className="p-6 max-w-3xl mx-auto bg-white rounded-md border border-gray-200 shadow-lg">
 
-      <form onSubmit={handleCheck} className="space-y-4">
-        <label className="block">
-          <span className="text-sm font-medium">Enter URL to check</span>
-          <input
-  value={url}
-  onChange={(e) => setUrl(e.target.value)}
-  placeholder="https://example.com/login"
-  className="mt-2 block w-full p-4 text-lg border-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 outline-none"
-/>
-
-        </label>
-
-        <div>
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded" disabled={loading}>
-            {loading ? "Checking…" : "Check URL"}
-          </button>
-        </div>
-
-        {error && <div className="text-red-600 mt-2">{error}</div>}
-
-        {result && (
-          <div className="mt-4 p-3 border rounded bg-gray-50">
-            <div><strong>Label:</strong> {result.label}</div>
-            <div><strong>Confidence:</strong> {(Number(result.confidence) ?? 0).toFixed(2)}</div>
-            <details className="mt-2">
-              <summary className="cursor-pointer">Features</summary>
-              <pre className="text-xs">{JSON.stringify(result.features, null, 2)}</pre>
-            </details>
-          </div>
-        )}
+      <form onSubmit={handleCheck} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+        <input
+          type="text"
+          placeholder="Paste URL here (include http:// or https://) or file path"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          style={{ flex: 1, padding: "8px 10px", fontSize: 16 }}
+        />
+        <button type="submit" disabled={loading} style={{ padding: "8px 12px" }}>
+          {loading ? "Checking…" : "Check"}
+        </button>
       </form>
+
+      {error && <div style={{ color: "crimson", marginTop: 8 }}>{error}</div>}
+
+      {result && (
+        <div style={{ marginTop: 12, padding: 12, borderRadius: 8, background: result.label === "phishing" ? "#fff1f2" : "#f0fff4", border: "1px solid #ddd" }}>
+          <div><strong>Label:</strong> {result.label}</div>
+          <div><strong>Confidence:</strong> {(result.score ?? 0).toFixed(2)}</div>
+           <pre style={{ maxHeight: 260, overflow: "auto", marginTop: 6 }}>
+    {JSON.stringify(result.raw, null, 2)}
+  </pre>
+
+          <div style={{ marginTop: 8, fontSize: 12, color: "#444" }}>Time: {result.checkedAt}</div>
+        </div>
+      )}
     </div>
   );
 }
