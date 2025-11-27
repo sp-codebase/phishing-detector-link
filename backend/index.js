@@ -35,17 +35,32 @@ const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } }); // 8M
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/phishing_detector";
 
-mongoose.connect(MONGODB_URI, {
+import mongoose from "mongoose"; // or const mongoose = require("mongoose");
+import dotenv from "dotenv";     // only if you're using dotenv locally
+dotenv.config();                 // (not required on Render, but useful locally)
 
-useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  console.error("❌ MONGODB_URI is not defined");
+  process.exit(1); // stop server if DB URL missing
+}
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ DB connection error:", err);
+  });
+
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.log("DB Error:", err));
 
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "phishingdetect100.netlify.app"],
   credentials: true
 }));
 
