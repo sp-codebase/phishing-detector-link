@@ -39,7 +39,7 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/phishi
 import dotenv from "dotenv";     // only if you're using dotenv locally
 dotenv.config();                 // (not required on Render, but useful locally)
 
-const MONGO_URI = process.env.MONGODB_URI;
+const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
   console.error("❌ MONGODB_URI is not defined");
@@ -55,8 +55,6 @@ mongoose
     console.error("❌ DB connection error:", err);
   });
 
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log("DB Error:", err));
 
 
 app.use(cors({
