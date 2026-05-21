@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Unified Security Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Dashboard Styles -->
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="topbar">
+    <h1>Unified Security Dashboard</h1>
+    <span class="subtitle">Real-Time Threat Intelligence</span>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="grid">
+
+    <!-- 🔥 TOP ROW: METRICS + CHARTS -->
+    <section class="top-row">
+
+      <!-- LEFT: METRICS -->
+      <section class="metrics">
+
+        <div class="metric-card">
+          <h4>Total Alerts</h4>
+          <p id="total">0</p>
+          <div class="sparkline"></div>
+        </div>
+
+        <div class="metric-card danger">
+          <h4>Phishing Detected</h4>
+          <p id="phishing">0</p>
+          <div class="sparkline red"></div>
+        </div>
+
+        <div class="metric-card warning">
+          <h4>Deepfakes Detected</h4>
+          <p id="deepfake">0</p>
+          <div class="sparkline yellow"></div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT: CHARTS -->
+      <section class="charts">
+
+        <div class="chart-box">
+          <h3>Threat Distribution</h3>
+          <canvas id="threatChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <h3>Detections Over Time</h3>
+          <canvas id="timelineChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <h3>Confidence Levels</h3>
+          <canvas id="confidenceChart"></canvas>
+        </div>
+
+      </section>
+
+    </section>
+
+    <!-- ================= DONUT / RISK ================= -->
+    <section class="analytics">
+      <div class="donut">
+        <svg viewBox="0 0 36 36">
+          <path class="bg"
+            d="M18 2
+               a 16 16 0 1 1 0 32
+               a 16 16 0 1 1 0 -32" />
+          <path class="meter"
+            stroke-dasharray="75,100"
+            d="M18 2
+               a 16 16 0 1 1 0 32
+               a 16 16 0 1 1 0 -32" />
+        </svg>
+        <span>Risk Level</span>
+      </div>
+    </section>
+
+    <!-- ================= TIMELINE TABLE ================= -->
+    <section class="timeline">
+      <h3>Recent Detection Timeline</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Result</th>
+            <th>Confidence</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+
+        <tbody id="activity">
+          <!-- Rows injected by dashboard.js -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+</html>

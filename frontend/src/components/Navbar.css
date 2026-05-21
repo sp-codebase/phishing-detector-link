@@ -1,0 +1,59 @@
+/* Navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between;  /* ✅ left + right alignment */
+  align-items: center;
+  background: rgba(44, 44, 50, 0.95); /* Indigo with opacity */
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  width: 100%;
+  margin: 0;
+  position: relative;  /* scrolls with page */
+  top: 0;
+  left: 0;
+  z-index: 50;
+}
+
+/* Logo / brand name */
+.navbar h2 {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;   /* remove default margin */
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: #404053;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  background-color: #4a4955;
+  transform: scale(1.05);
+}
+
+.nav-links a.active {
+  background-color: #84839d;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Remove default body margins */
+body {
+  margin: 0;
+}
+
+ 

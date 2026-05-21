@@ -1,0 +1,201 @@
+.df-container {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at top, #06182f, #020b16),
+    url("/grid.png"); /* optional */
+  color: #e5e7eb;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* HERO */
+.df-hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+}
+
+.df-hero h1 {
+  font-size: 42px;
+  letter-spacing: 1px;
+  color: #e0f2fe;
+  text-shadow: 0 0 20px #38bdf8;
+}
+
+.df-hero p {
+  max-width: 700px;
+  margin: 16px auto;
+  color: #94a3b8;
+}
+
+/* INFO GRID */
+.df-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.df-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.15);
+}
+
+.df-card h3 {
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+/* DETECTOR */
+.df-detector {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 32px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  text-align: center;
+}
+
+.df-detector button {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #38bdf8, #22d3ee);
+  color: black;
+  border: none;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 25px #38bdf8;
+}
+
+.df-analyze-btn {
+  margin-top: 12px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  position: relative;
+  pointer-events: auto;
+}
+
+.df-preview {
+  margin-top: 16px;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.df-error {
+  color: #ff4d4f;
+  margin-top: 10px;
+}
+
+.df-result {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(0, 255, 255, 0.1);
+  border-left: 4px solid cyan;
+}
+.df-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: cyan;
+  animation: scan 2s linear infinite;
+}
+/* confidence meter */
+.df-confidence-tag {
+  margin-left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.df-high {
+  background: rgba(220,38,38,0.85);
+  color: #fee2e2;
+}
+
+.df-medium {
+  background: rgba(234,179,8,0.85);
+  color: #fef3c7;
+}
+
+.df-low {
+  background: rgba(16,185,129,0.85);
+  color: #ecfdf5;
+}
+
+
+
+
+
+
+/* GLOBAL AI GRID BACKGROUND */
+.df-container {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px),
+    radial-gradient(circle at top, #06182f, #020b16);
+  background-size: 40px 40px, 40px 40px, cover;
+  background-attachment: fixed;
+}
+.df-explain {
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 30px;
+  background: rgba(15,23,42,0.6);
+  border-left: 4px solid cyan;
+}
+
+.df-explain ul {
+  margin-left: 20px;
+}
+
+.df-note {
+  margin-top: 12px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+/* ================= FIX CLICK BLOCKING ISSUE ================= */
+
+/* Disable pointer events on full-page background/grid */
+.df-container {
+  pointer-events: none;
+}
+
+/* Re-enable pointer events for actual UI elements */
+.df-hero,
+.df-info-grid,
+.df-detector-zone,
+.df-detector-header,
+.df-detector-content,
+.df-controls,
+.df-controls input,
+.df-analyze-btn,
+.df-analysis-area,
+.df-analysis-area img,
+.df-explain {
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure scan animation never blocks clicks */
+.df-scan-line {
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Make sure button is always clickable */
+.df-analyze-btn {
+  cursor: pointer;
+  z-index: 20;
+}

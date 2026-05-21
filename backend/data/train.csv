@@ -1,0 +1,9 @@
+url,label
+http://example.com,0
+https://google.com,0
+http://secure-login-update.verify-account.com/login,1
+http://paypal.com.verify-user-login-secure123.com,1
+http://192.168.1.14/confirm,1
+https://openai.com,0
+http://bankofamerica.secure-auth-check.com,1
+http://github.com,0
