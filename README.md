@@ -1,4 +1,4 @@
-# PhishGuard 🔐🧠
+# PhishGuard 
 
 PhishGuard is a **full‑stack AI-powered security application** that detects **phishing URLs** and **deepfake images** using Machine Learning and Deep Learning models.
 
@@ -7,11 +7,11 @@ This project combines:
 * 🌐 **Frontend** (Vite + JS)
 * ⚙️ **Backend API** (Node.js + Express)
 * 🧠 **ML Models** (Python: Scikit‑learn & TensorFlow)
-* 🗄 **Database** (MongoDB)
+
 
 ---
 
-## 🚀 Features
+## Features
 
 ### 🔗 Phishing Detection
 
@@ -158,52 +158,10 @@ npm install
 
 ---
 
-### 3️⃣ MongoDB
 
-Ensure MongoDB is running locally:
 
-```txt
-mongodb://localhost:27017/phishing_detector
-```
 
-Or configure in `.env`:
 
-```env
-MONGO_URI=mongodb://localhost:27017/phishing_detector
-PYTHON_CMD=python
-```
-
----
-
-### 4️⃣ Run Backend Server
-
-```bash
-node index.js
-```
-
-Server runs on:
-
-```
-http://localhost:3001
-```
-
----
-
-### 5️⃣ Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend runs on:
-
-```
-http://localhost:5173
-```
-
----
 
 ## 🧠 Models Used
 
@@ -219,31 +177,9 @@ http://localhost:5173
 * Framework: TensorFlow / Keras
 * Input size: 299×299 RGB image
 
----
 
-## ⚠️ Notes
 
-* Ensure **same sklearn version** is used for training & inference
-* Deepfake model file (`.h5`) must exist in correct path
-* Do not use Flask dev server in production
 
----
-
-## 📌 Future Improvements
-
-* Dockerization
-* Cloud deployment
-* Browser extension
-* Email phishing detection
-
----
-
-## 👩‍💻 Author
-
-**Sonal Priya**
-BTech (CSE) | AI & Web Development Enthusiast
-
----
 
 ## ⭐ If you like this project
 
