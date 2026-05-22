@@ -180,6 +180,39 @@ export default function DeepfakePage() {
         </div>
       </section>
 
+
+      {/* ===== VIDEO DETECTOR ZONE ===== */}
+      <section className="df-detector-zone">
+
+        <div className="df-detector-header">
+          <h2>Deepfake Video Detection</h2>
+          <p>Upload MP4, AVI, or MOV video</p>
+        </div>
+
+        <div className="df-detector-content">
+          <div className="df-controls">
+
+            <input
+              type="file"
+              accept="video/*"
+            />
+
+            <button
+              type="button"
+              className="df-analyze-btn"
+            >
+              Start Video Analysis
+            </button>
+
+          </div>
+
+          <div className="df-analysis-area">
+            <div className="df-placeholder">
+              Video Analysis Output
+            </div>
+          </div>
+        </div>
+      </section>
       {/* ===== EXPLANATION ===== */}
       {result && (
         <section className="df-explain">
