@@ -9,25 +9,20 @@ export default function DeepfakePage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ------------------ CONFIDENCE HELPER ------------------ */
-  function confidenceLevel(score) {
-    if (typeof score !== "number") {
-      return { label: "UNKNOWN", color: "df-medium" };
-    }
-    if (score >= 0.8) return { label: "HIGH", color: "df-high" };
-    if (score >= 0.5) return { label: "MEDIUM", color: "df-medium" };
-    return { label: "LOW", color: "df-low" };
-  }
-
   /* ------------------ FILE HANDLER ------------------ */
   function handleFile(e) {
     const f = e.target.files[0];
+
     if (!f) return;
 
-    // ✅ Validate file type
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
     if (!allowedTypes.includes(f.type)) {
-      setError("Only JPG, PNG, or WEBP images are supported. No GIFs.");
+      setError("Only JPG, PNG, or WEBP images are supported.");
       setFile(null);
       setPreview(null);
       return;
@@ -48,13 +43,6 @@ export default function DeepfakePage() {
       return;
     }
 
-    // ✅ Double-check file type before sending
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
-      setError("Only JPG, PNG, or WEBP images are supported. No GIFs.");
-      return;
-    }
-
     setLoading(true);
     setError("");
     setResult(null);
@@ -65,51 +53,86 @@ export default function DeepfakePage() {
 
       console.log("Sending request to backend...");
 
-      const res = await deepfakeApi.post("/api/deepfake/detect", fd);
-      console.log("Backend response:", res.data);
-      setResult(res.data.result.result.claim_lists);
+      const res = await deepfakeApi.post(
+        "/api/deepfake/detect",
+        fd,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("FULL RESPONSE:", res.data);
+
+      // Adjust according to actual backend response
+      const claimLists =
+        res.data?.result?.result?.claim_lists ||
+        res.data?.result?.claim_lists ||
+        res.data?.claim_lists ||
+        null;
+
+      console.log("CLAIM LISTS:", claimLists);
+
+      if (!claimLists) {
+        throw new Error("Invalid response format.");
+      }
+
+      setResult(claimLists);
 
     } catch (err) {
-      console.error("API error:", err);
-      setError("AI analysis failed. Please try again.");
+      console.error("API Error:", err);
+
+      if (err.response) {
+        console.log("Response Status:", err.response.status);
+        console.log("Response Data:", err.response.data);
+      }
+
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "AI analysis failed."
+      );
     } finally {
       setLoading(false);
     }
   }
 
-  /* ------------------ RENDER ------------------ */
   return (
     <div className="df-container">
 
-      {/* ===== HERO ===== */}
+      {/* HERO */}
       <section className="df-hero">
         <h1>AI Deepfake Detection System</h1>
         <p>
-          A research-driven deep learning system designed to identify
-          AI-generated media and protect digital trust.
+          A research-driven deep learning system designed
+          to identify AI-generated media and protect digital trust.
         </p>
       </section>
 
-      {/* ===== INFO ===== */}
+      {/* INFO */}
       <section className="df-info-grid">
+
         <div className="df-card">
           <h3>What is a Deepfake?</h3>
           <p>
-            Deepfakes are AI-generated images or videos created using
-            neural networks that manipulate facial features and identity.
+            Deepfakes are AI-generated images or videos created
+            using neural networks that manipulate facial features
+            and identity.
           </p>
         </div>
 
         <div className="df-card">
           <h3>Why It's Dangerous</h3>
           <p>
-            Deepfakes enable fraud, misinformation, identity theft,
-            and erosion of trust in digital media.
+            Deepfakes enable fraud, misinformation,
+            identity theft, and erosion of trust in digital media.
           </p>
         </div>
+
       </section>
 
-      {/* ===== DETECTOR ZONE ===== */}
+      {/* IMAGE DETECTOR */}
       <section className="df-detector-zone">
 
         <div className="df-detector-header">
@@ -119,10 +142,8 @@ export default function DeepfakePage() {
 
         <div className="df-detector-content">
 
-          {/* CONTROLS */}
           <div className="df-controls">
 
-            {/* ✅ Restricted file types */}
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
@@ -135,53 +156,82 @@ export default function DeepfakePage() {
               disabled={loading}
               className="df-analyze-btn"
             >
-              {loading ? "Scanning…" : "Start AI Analysis"}
+              {loading
+                ? "Scanning..."
+                : "Start AI Analysis"}
             </button>
 
-            {error && <p className="df-error">{error}</p>}
+            {error && (
+              <p className="df-error">{error}</p>
+            )}
+
           </div>
 
-          {/* ANALYSIS AREA */}
           <div className="df-analysis-area">
+
             {preview ? (
-              <img src={preview} alt="preview" />
+              <img
+                src={preview}
+                alt="Preview"
+              />
             ) : (
               <div className="df-placeholder">
                 AI Analysis Output
               </div>
             )}
 
-            {loading && <div className="df-scan-line" />}
+            {loading && (
+              <div className="df-scan-line" />
+            )}
 
             {result && (
               <div className="df-result-overlay">
-                {result.critical.length > 0 && (
+
+                {result?.critical?.length > 0 && (
                   <h3 className="df-high">
                     ❌ High Risk: AI-generated image detected
                   </h3>
                 )}
 
-                {result.suspect.length > 0 && result.critical.length === 0 && (
-                  <h3 className="df-medium">
-                    ⚠️ Uncertain: Image authenticity could not be confirmed
-                  </h3>
-                )}
+                {result?.suspect?.length > 0 &&
+                  result?.critical?.length === 0 && (
+                    <h3 className="df-medium">
+                      ⚠️ Uncertain: Image authenticity
+                      could not be confirmed
+                    </h3>
+                  )}
 
-                {result.benign.length > 0 && result.suspect.length === 0 && result.critical.length === 0 && (
-                  <h3 className="df-low">
-                    ✅ Likely real image
-                  </h3>
-                )}
+                {result?.benign?.length > 0 &&
+                  result?.suspect?.length === 0 &&
+                  result?.critical?.length === 0 && (
+                    <h3 className="df-low">
+                      ✅ Likely real image
+                    </h3>
+                  )}
+
+                {/* DEBUG */}
+                <pre
+                  style={{
+                    textAlign: "left",
+                    marginTop: "10px",
+                    fontSize: "12px",
+                    overflow: "auto",
+                    maxHeight: "200px",
+                  }}
+                >
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+
               </div>
             )}
 
           </div>
 
         </div>
+
       </section>
 
-
-      {/* ===== VIDEO DETECTOR ZONE ===== */}
+      {/* VIDEO DETECTOR */}
       <section className="df-detector-zone">
 
         <div className="df-detector-header">
@@ -190,8 +240,8 @@ export default function DeepfakePage() {
         </div>
 
         <div className="df-detector-content">
-          <div className="df-controls">
 
+          <div className="df-controls">
             <input
               type="file"
               accept="video/*"
@@ -203,7 +253,6 @@ export default function DeepfakePage() {
             >
               Start Video Analysis
             </button>
-
           </div>
 
           <div className="df-analysis-area">
@@ -211,14 +260,16 @@ export default function DeepfakePage() {
               Video Analysis Output
             </div>
           </div>
+
         </div>
+
       </section>
-      {/* ===== EXPLANATION ===== */}
+
       {result && (
         <section className="df-explain">
           <p className="df-note">
-            ⚠️ This analysis is probabilistic and should be used as
-            a decision-support tool.
+            ⚠️ This analysis is probabilistic and
+            should be used as a decision-support tool.
           </p>
         </section>
       )}
